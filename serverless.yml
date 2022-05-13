@@ -1,0 +1,87 @@
+service: accreditation-errors
+
+plugins:
+  - serverless-iam-roles-per-function
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: us-east-1
+  environment:
+    REGION: ${self:provider.region}
+    ACCREDITATION_ERRORS_TOPIC:
+      Ref: AcreditationErrorsTopic
+
+functions:
+  GetAccreditationsErrors:
+    handler: src/application/get-accreditation-errors-from-transactional/handlers/get_accreditation_errors_from_transactional.handler
+    name: mts-partners-${self:provider.stage}-get-accreditation-errors-from-transactional
+    #https://www.serverless.com/plugins/serverless-iam-roles-per-function
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - "sns:Publish"
+        Resource: "arn:aws:sns:${self:provider.region}:*:mts-sns-${self:custom.components.name}-${self:provider.stage}"
+    events:
+      - http:
+          method: post
+          path: accreditation-errors
+
+custom:
+  networking:
+    disabled: true
+  authorizer:
+    validateScopes: true
+  components:
+    name: transactional-acreditation-errors
+
+resources:
+  Resources:
+    AcreditationErrorsTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: Client Created Topic
+        TopicName: mts-sns-${self:custom.components.name}-${self:provider.stage}
+        Subscription:
+          - Protocol: sqs
+            Endpoint: !GetAtt PartnersAcreditationErrorsQueue.Arn
+
+    PartnersAcreditationErrorsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: mts-sqs-${self:custom.components.name}-${self:provider.stage}
+
+    PartnersAcreditationErrorsQueuePolicy:
+      Type: AWS::SQS::QueuePolicy
+      Properties:
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Action:
+                - SQS:*
+              Resource: !GetAtt PartnersAcreditationErrorsQueue.Arn
+              Principal:
+                AWS:
+                  - !Ref AWS::AccountId
+            - Effect: Allow
+              Principal:
+                AWS:
+                  - '*'
+              Action:
+                - SQS:SendMessage
+              Resource: !GetAtt PartnersAcreditationErrorsQueue.Arn
+              Condition:
+                ArnLike:
+                  aws:SourceArn:
+                    - !Ref AcreditationErrorsTopic
+        Queues:
+          - !Ref PartnersAcreditationErrorsQueue
+
+#POST - https://z0ba0ao6se.execute-api.us-east-1.amazonaws.com/dev/accreditation-errors
+#Monitor all your API routes with Serverless Console: run "serverless --console"
+
+
+  
