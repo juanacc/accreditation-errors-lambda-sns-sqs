@@ -1,15 +1,22 @@
-//const {logger} = require('@common/node-logger');
 const {transactionalAccreditationErrorsMapper} = require('../mappers');
 const {snsParamsSerializer} = require('../serializers');
 const {sendMessage} = require('../../helpers/aws/sns');
+const {validateTransactional} = require('../../middleware/transactional');
+const {formatError} = require('../../helpers/formatError');
 
 module.exports.handler = async (event, context, callback) => {
   try {
-    //logger.info('event: ', event);
     console.log('event: ', event);
-    const dataAccount = transactionalAccreditationErrorsMapper(
-        JSON.parse(event.body),
-    );
+
+    const body = JSON.parse(event.body);
+    const errors = validateTransactional(body);
+    
+    if(errors.length > 0) {
+      const formattedErrors = formatError(errors);
+      return callback(null, formattedErrors);
+    }
+
+    const dataAccount = transactionalAccreditationErrorsMapper(body);
     const params = snsParamsSerializer(dataAccount);
     const response = await sendMessage(params);
     callback(null, {
@@ -17,7 +24,6 @@ module.exports.handler = async (event, context, callback) => {
       body: JSON.stringify(response),
     });
   } catch (error) {
-    //logger.error('error: ', error);
     console.log('error: ', error);
     callback(error);
   }
