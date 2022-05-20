@@ -16,6 +16,17 @@ provider:
       Ref: AcreditationErrorsTopic
 
 functions:
+  ReadAcreditationsErrors:
+    handler: src/application/read-acreditation-errors/handlers/read_acreditation_errors.handler
+    name: mts-partners-${self:provider.stage}-read-acreditation-errors
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - PartnersAcreditationErrorsQueue
+              - Arn
+          batchSize: 1
+
   GetAccreditationsErrors:
     handler: src/application/get-accreditation-errors-from-transactional/handlers/get_accreditation_errors_from_transactional.handler
     name: mts-partners-${self:provider.stage}-get-accreditation-errors-from-transactional
