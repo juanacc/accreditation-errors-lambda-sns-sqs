@@ -29,18 +29,18 @@ exports.inputSchema = {
                 format: typeError('email', 'email'),
             },
         },
-        main_account: {
+        number_main_account: {
             type: 'string',
             pattern: '^[0-9]+$',
             errorMessage: {
-                type: typeError('main_account', 'string'),
+                type: typeError('number_main_account', 'string'),
             },
         },
-        secondary_account: {
+        cbu_secondary_account: {
             type: 'string',
             pattern: '^[0-9]+$',
             errorMessage: {
-                type: typeError('secondary_account', 'string'),
+                type: typeError('cbu_secondary_account', 'string'),
             },
         },
         client_id: {
@@ -50,5 +50,5 @@ exports.inputSchema = {
             },
         },
     },
-    required: ['cuit', 'email', 'main_account', 'secondary_account', 'client_id'],
+    required: ['cuit', 'email', 'number_main_account', 'cbu_secondary_account', 'client_id'],
 };

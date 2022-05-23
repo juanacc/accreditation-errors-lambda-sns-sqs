@@ -6,8 +6,8 @@ exports.inactiveAccountMapper = (attributes) => {
         cuit: attributes.Message['cuit'],
         infoAccounts: {
         email: attributes.Message['email'],
-        mainAccount: attributes.Message['mainAccount'],
-        secondaryAccount: attributes.Message['secondaryAccount'],
+        numberMainAccount: attributes.Message['numberMainAccount'],
+        cbuSecondaryAccount: attributes.Message['cbuSecondaryAccount'],
         clientId: attributes.Message['clientId'],
         },
     });

@@ -10,7 +10,7 @@ module.exports.handler = async (event, context, callback) => {
         JSON.parse(event.Records[0].body),
     );
 
-    console.log('Data Inactivate Account: ', JSON.parse(event.Records[0].body).Message);
+    console.log('Data Inactivate Account: ', JSON.parse(event.Records[0].body));
     // inactiveAccountInteractor(
     //     dataInactivateAccount.cuit,
     //     dataInactivateAccount.infoAccounts,

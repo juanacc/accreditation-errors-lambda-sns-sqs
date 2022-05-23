@@ -16,8 +16,9 @@ module.exports.handler = async (event, context, callback) => {
       return callback(null, formattedErrors);
     }
 
-    const dataAccount = transactionalAccreditationErrorsMapper(body);
-    const params = snsParamsSerializer(dataAccount);
+    //const dataAccount = transactionalAccreditationErrorsMapper(body);
+    //const params = snsParamsSerializer(dataAccount);
+    const params = snsParamsSerializer(body);
     const response = await sendMessage(params);
     callback(null, {
       statusCode: 200,
