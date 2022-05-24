@@ -1,14 +1,15 @@
 exports.inactiveAccountMapper = (attributes) => {
     console.log('=====================');
-    console.log(attributes.Message);
+    console.log(JSON.parse(attributes.Message));
     console.log('=====================');
+    const attributesJson = JSON.parse(attributes.Message);
     return ({
-        cuit: attributes.Message['cuit'],
+        cuit: attributesJson.cuit,
         infoAccounts: {
-        email: attributes.Message['email'],
-        numberMainAccount: attributes.Message['numberMainAccount'],
-        cbuSecondaryAccount: attributes.Message['cbuSecondaryAccount'],
-        clientId: attributes.Message['clientId'],
+            email: attributesJson.email,
+            number_main_account: attributesJson.number_main_account,
+            cbu_secondary_account: attributesJson.cbu_secondary_account,
+            client_id: attributesJson.client_id,
         },
     });
 };

@@ -35,7 +35,9 @@ functions:
       - Effect: "Allow"
         Action:
           - "sns:Publish"
-        Resource: "arn:aws:sns:${self:provider.region}:*:mts-sns-${self:custom.components.name}-${self:provider.stage}"
+        #Resource: "arn:aws:sns:${self:provider.region}:*:mts-sns-${self:custom.components.name}-${self:provider.stage}"
+        Resource:
+          - !Ref AcreditationErrorsTopic
     events:
       - http:
           method: post
